@@ -14,6 +14,7 @@
 package io.trino.plugin.hive;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import io.trino.spi.Node;
 import io.trino.spi.NodeManager;
 import io.trino.spi.connector.BucketFunction;
@@ -65,10 +66,15 @@ public class HiveNodePartitioningProvider
     {
         HivePartitioningHandle handle = (HivePartitioningHandle) partitioningHandle;
         List<HiveType> hiveBucketTypes = handle.getHiveTypes();
-        if (!handle.isUsePartitionedBucketing()) {
-            return new HiveBucketFunction(handle.getBucketingVersion(), bucketCount, hiveBucketTypes);
+        if (!handle.isUsePartitionedBucketingForWrites()) {
+            return new HiveBucketFunction(
+                    handle.getBucketingVersion(),
+                    bucketCount,
+                    hiveBucketTypes,
+                    partitionChannelTypes.subList(0, partitionChannelTypes.size() - hiveBucketTypes.size()),
+                    handle.getPartitions());
         }
-        return new HivePartitionedBucketFunction(
+        return new HivePartitionHashBucketFunction(
                 handle.getBucketingVersion(),
                 handle.getBucketCount(),
                 hiveBucketTypes,
@@ -81,8 +87,8 @@ public class HiveNodePartitioningProvider
     public ConnectorBucketNodeMap getBucketNodeMap(ConnectorTransactionHandle transactionHandle, ConnectorSession session, ConnectorPartitioningHandle partitioningHandle)
     {
         HivePartitioningHandle handle = (HivePartitioningHandle) partitioningHandle;
-        if (!handle.isUsePartitionedBucketing()) {
-            return createBucketNodeMap(handle.getBucketCount());
+        if (!handle.isUsePartitionedBucketingForWrites()) {
+            return createBucketNodeMap(handle.getBucketCount() * Integer.max(1, handle.getPartitions().size()));
         }
 
         // Create a bucket to node mapping. Consecutive buckets are assigned
@@ -120,7 +126,21 @@ public class HiveNodePartitioningProvider
             ConnectorSession session,
             ConnectorPartitioningHandle partitioningHandle)
     {
-        return value -> ((HiveSplit) value).getReadBucketNumber()
-                .orElseThrow(() -> new IllegalArgumentException("Bucket number not set in split"));
+        final HivePartitioningHandle handle = (HivePartitioningHandle) partitioningHandle;
+        if (handle.getPartitions().isEmpty()) {
+            return value -> ((HiveSplit) value).getReadBucketNumber()
+                    .orElseThrow(() -> new IllegalArgumentException("Bucket number not set in split"));
+        }
+        List<String> partitions = handle.getPartitions();
+        ImmutableMap.Builder<String, Integer> partitionToIndexBuilder = ImmutableMap.builder();
+        for (int i = 0; i < handle.getPartitions().size(); i++) {
+            partitionToIndexBuilder.put(partitions.get(i), i);
+        }
+        final ImmutableMap<String, Integer> partitionToIndex = partitionToIndexBuilder.buildOrThrow();
+        return value -> {
+            HiveSplit split = (HiveSplit) value;
+            int partitionIndex = partitionToIndex.getOrDefault(split.getPartitionName(), 0);
+            return split.getReadBucketNumber().orElse(0) + (handle.getBucketCount() * partitionIndex);
+        };
     }
 }
