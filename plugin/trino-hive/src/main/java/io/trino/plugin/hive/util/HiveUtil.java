@@ -38,6 +38,7 @@ import io.trino.plugin.hive.metastore.SortingColumn;
 import io.trino.plugin.hive.metastore.Table;
 import io.trino.spi.ErrorCodeSupplier;
 import io.trino.spi.TrinoException;
+import io.trino.spi.block.Block;
 import io.trino.spi.connector.ColumnMetadata;
 import io.trino.spi.predicate.NullableValue;
 import io.trino.spi.type.ArrayType;
@@ -542,6 +543,36 @@ public final class HiveUtil
                 type instanceof CharType;
     }
 
+    public static NullableValue partitionKeyFromBlock(Type type, Block block, int position)
+    {
+        if (block.isNull(position)) {
+            return NullableValue.asNull(type);
+        }
+        if (type instanceof DecimalType) {
+            DecimalType decimalType = (DecimalType) type;
+            if (decimalType.isShort()) {
+                return NullableValue.of(type, type.getLong(block, position));
+            }
+            else {
+                return NullableValue.of(type, type.getObject(block, position));
+            }
+        }
+        if (BOOLEAN.equals(type)) {
+            return NullableValue.of(type, type.getBoolean(block, position));
+        }
+        if (TINYINT.equals(type) ||
+                SMALLINT.equals(type) ||
+                INTEGER.equals(type) ||
+                BIGINT.equals(type) ||
+                REAL.equals(type) ||
+                DOUBLE.equals(type) ||
+                DATE.equals(type) ||
+                TIMESTAMP_MILLIS.equals(type)) {
+            return NullableValue.of(type, type.getLong(block, position));
+        }
+        return NullableValue.of(type, type.getObject(block, position));
+    }
+
     public static NullableValue parsePartitionValue(String partitionName, String value, Type type)
     {
         verifyPartitionTypeSupported(partitionName, type);
@@ -924,6 +955,27 @@ public final class HiveUtil
     public static String columnExtraInfo(boolean partitionKey)
     {
         return partitionKey ? "partition key" : null;
+    }
+
+    public static String erasePartitionColumnNames(String partitionName)
+    {
+        ImmutableList.Builder<String> resultBuilder = ImmutableList.builder();
+        int start = 0;
+        while (true) {
+            while (start < partitionName.length() && partitionName.charAt(start) != '=') {
+                start++;
+            }
+            int end = start;
+            while (end < partitionName.length() && partitionName.charAt(end) != '/') {
+                end++;
+            }
+            if (start > partitionName.length()) {
+                break;
+            }
+            resultBuilder.add(partitionName.substring(start, end));
+            start = end + 1;
+        }
+        return String.join("/", resultBuilder.build());
     }
 
     public static List<String> toPartitionValues(String partitionName)
