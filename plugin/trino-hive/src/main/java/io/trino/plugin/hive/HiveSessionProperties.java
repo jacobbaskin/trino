@@ -56,7 +56,7 @@ public final class HiveSessionProperties
         implements SessionPropertiesProvider
 {
     private static final String BUCKET_EXECUTION_ENABLED = "bucket_execution_enabled";
-    private static final String PARTITION_EXECUTION_ENABLED = "partition_execution_min_partitions";
+    private static final String PARTITION_EXECUTION_ENABLED = "partition_execution_enabled";
     private static final String VALIDATE_BUCKETING = "validate_bucketing";
     private static final String TARGET_MAX_FILE_SIZE = "target_max_file_size";
     private static final String PARALLEL_PARTITIONED_BUCKETED_WRITES = "parallel_partitioned_bucketed_writes";

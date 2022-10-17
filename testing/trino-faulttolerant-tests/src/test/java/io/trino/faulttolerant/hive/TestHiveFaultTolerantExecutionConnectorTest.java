@@ -119,18 +119,6 @@ public class TestHiveFaultTolerantExecutionConnectorTest
         assertQueryFails(session, "SELECT nationkey, count(*) FROM nation GROUP BY nationkey", "Max number of output partitions exceeded for exchange.*");
     }
 
-    @Test
-    public void testPartitionExecutionOnly()
-    {
-        super.testPartitionExecutionOnly();
-    }
-
-    @Test
-    public void testPartitionAndBucketExecution()
-    {
-        super.testPartitionAndBucketExecution();
-    }
-
     @AfterClass(alwaysRun = true)
     public void destroy()
             throws Exception

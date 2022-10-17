@@ -206,7 +206,7 @@ public class TestHiveConfig
                 .put("hive.delta-lake-catalog-name", "delta")
                 .put("hive.auto-purge", "true")
                 .put(CONFIGURATION_HIVE_PARTITION_PROJECTION_ENABLED, "true")
-                .put("hive.partition-execution-enabled", "true")
+                .put("hive.partition-execution", "true")
                 .buildOrThrow();
 
         HiveConfig expected = new HiveConfig()
