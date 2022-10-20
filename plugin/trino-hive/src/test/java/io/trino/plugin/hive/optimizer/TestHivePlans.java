@@ -169,10 +169,9 @@ public class TestHivePlans
                 noJoinReordering(),
                 output(
                         join(INNER, List.of(equiJoinClause("L_STR_PART", "R_STR_COL")),
-                                exchange(REMOTE, REPARTITION,
-                                        project(
-                                                filter("\"like\"(L_STR_PART, \"$like_pattern\"('t%'))",
-                                                        tableScan("table_str_partitioned", Map.of("L_INT_COL", "int_col", "L_STR_PART", "str_part"))))),
+                                project(
+                                        filter("\"like\"(L_STR_PART, \"$like_pattern\"('t%'))",
+                                                tableScan("table_str_partitioned", Map.of("L_INT_COL", "int_col", "L_STR_PART", "str_part")))),
                                 exchange(LOCAL,
                                         exchange(REMOTE, REPARTITION,
                                                 project(
@@ -191,10 +190,9 @@ public class TestHivePlans
                 noJoinReordering(),
                 output(
                         join(INNER, List.of(equiJoinClause("L_INT_PART", "R_INT_COL")),
-                                exchange(REMOTE, REPARTITION,
-                                        project(
-                                                filter("true", // dynamic filter
-                                                        tableScan("table_int_partitioned", Map.of("L_INT_PART", "int_part", "L_STR_COL", "str_col"))))),
+                                project(
+                                        filter("true", // dynamic filter
+                                                tableScan("table_int_partitioned", Map.of("L_INT_PART", "int_part", "L_STR_COL", "str_col")))),
                                 exchange(LOCAL,
                                         exchange(REMOTE, REPARTITION,
                                                 project(
@@ -214,10 +212,9 @@ public class TestHivePlans
                 noJoinReordering(),
                 output(
                         join(INNER, List.of(equiJoinClause("L_INT_PART", "R_INT_COL")),
-                                exchange(REMOTE, REPARTITION,
-                                        project(
-                                                filter("L_STR_COL != 'three'",
-                                                        tableScan("table_int_partitioned", Map.of("L_INT_PART", "int_part", "L_STR_COL", "str_col"))))),
+                                project(
+                                        filter("L_STR_COL != 'three'",
+                                                tableScan("table_int_partitioned", Map.of("L_INT_PART", "int_part", "L_STR_COL", "str_col")))),
                                 exchange(LOCAL,
                                         exchange(REMOTE, REPARTITION,
                                                 project(
@@ -237,10 +234,9 @@ public class TestHivePlans
                 noJoinReordering(),
                 output(
                         join(INNER, List.of(equiJoinClause("L_INT_PART", "R_INT_COL")),
-                                exchange(REMOTE, REPARTITION,
-                                        project(
-                                                filter("substring(L_STR_COL, BIGINT '2') != CAST('hree' AS varchar(5))",
-                                                        tableScan("table_int_partitioned", Map.of("L_INT_PART", "int_part", "L_STR_COL", "str_col"))))),
+                                project(
+                                        filter("substring(L_STR_COL, BIGINT '2') != CAST('hree' AS varchar(5))",
+                                                tableScan("table_int_partitioned", Map.of("L_INT_PART", "int_part", "L_STR_COL", "str_col")))),
                                 exchange(LOCAL,
                                         exchange(REMOTE, REPARTITION,
                                                 project(
@@ -260,10 +256,9 @@ public class TestHivePlans
                 noJoinReordering(),
                 output(
                         join(INNER, List.of(equiJoinClause("L_INT_PART", "R_INT_COL")),
-                                exchange(REMOTE, REPARTITION,
-                                        project(
-                                                filter("L_INT_PART % 2 = 0",
-                                                        tableScan("table_int_partitioned", Map.of("L_INT_PART", "int_part", "L_STR_COL", "str_col"))))),
+                                project(
+                                        filter("L_INT_PART % 2 = 0",
+                                                tableScan("table_int_partitioned", Map.of("L_INT_PART", "int_part", "L_STR_COL", "str_col")))),
                                 exchange(LOCAL,
                                         exchange(REMOTE, REPARTITION,
                                                 project(
@@ -280,10 +275,9 @@ public class TestHivePlans
                 noJoinReordering(),
                 output(
                         join(INNER, List.of(equiJoinClause("L_INT_PART", "R_INT_COL")),
-                                exchange(REMOTE, REPARTITION,
-                                        project(
-                                                filter("true", //dynamic filter
-                                                        tableScan("table_int_partitioned", Map.of("L_INT_PART", "int_part", "L_STR_COL", "str_col"))))),
+                                project(
+                                        filter("true", //dynamic filter
+                                                tableScan("table_int_partitioned", Map.of("L_INT_PART", "int_part", "L_STR_COL", "str_col")))),
                                 exchange(LOCAL,
                                         exchange(REMOTE, REPARTITION,
                                                 project(
