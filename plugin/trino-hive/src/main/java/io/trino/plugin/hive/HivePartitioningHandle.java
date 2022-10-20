@@ -125,7 +125,8 @@ public class HivePartitioningHandle
         }
         HivePartitioningHandle that = (HivePartitioningHandle) o;
         return bucketCount == that.bucketCount &&
-                Objects.equals(partitions, that.partitions) &&
+                partitions.isEmpty() == that.partitions.isEmpty() &&
+                // Objects.equals(partitions, that.partitions) &&
                 usePartitionedBucketingForWrites == that.usePartitionedBucketingForWrites &&
                 Objects.equals(hiveTypes, that.hiveTypes);
     }
