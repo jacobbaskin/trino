@@ -3033,7 +3033,7 @@ public class HiveMetadata
         HivePartitioningHandle leftHandle = (HivePartitioningHandle) left;
         HivePartitioningHandle rightHandle = (HivePartitioningHandle) right;
 
-        if (leftHandle.equals(rightHandle)) {
+        if (leftHandle.equals(rightHandle) && leftHandle.getPartitions().equals(rightHandle.getPartitions())) {
             return Optional.of(leftHandle);
         }
         if (leftHandle.isUsePartitionedBucketingForWrites() != rightHandle.isUsePartitionedBucketingForWrites()) {

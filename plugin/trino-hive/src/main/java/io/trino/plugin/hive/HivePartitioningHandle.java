@@ -124,9 +124,13 @@ public class HivePartitioningHandle
             return false;
         }
         HivePartitioningHandle that = (HivePartitioningHandle) o;
+
+        // Note that this.equals(o) will still return true if the two partitioning handles use different partitions.
+        // This is because HivePartitioningHandle equality is used in the planner to mean, "are these two partitioning
+        // schemes equivalent from a planning point of view?" and the answer to this is "yes" even if the exact partitions
+        // we're considering end up changing.
         return bucketCount == that.bucketCount &&
                 partitions.isEmpty() == that.partitions.isEmpty() &&
-                // Objects.equals(partitions, that.partitions) &&
                 usePartitionedBucketingForWrites == that.usePartitionedBucketingForWrites &&
                 Objects.equals(hiveTypes, that.hiveTypes);
     }
@@ -134,6 +138,6 @@ public class HivePartitioningHandle
     @Override
     public int hashCode()
     {
-        return Objects.hash(bucketCount, hiveTypes, partitions, usePartitionedBucketingForWrites);
+        return Objects.hash(bucketCount, hiveTypes, partitions.isEmpty(), usePartitionedBucketingForWrites);
     }
 }
