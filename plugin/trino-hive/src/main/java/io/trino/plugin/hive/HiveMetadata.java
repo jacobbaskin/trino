@@ -2795,7 +2795,7 @@ public class HiveMetadata
 
         Optional<ConnectorTablePartitioning> tablePartitioning = Optional.empty();
         List<LocalProperty<ColumnHandle>> sortingProperties = ImmutableList.of();
-        boolean isPartitionExecution = partitionExecutionEnabled && partitions.isPresent();
+        boolean isPartitionExecution = partitionExecutionEnabled && partitions.isPresent() && !partitionColumns.isEmpty();
         if (hiveTable.getBucketHandle().isPresent()) {
             if (isPropagateTableScanSortingProperties(session) && !hiveTable.getBucketHandle().get().getSortedBy().isEmpty()) {
                 // Populating SortingProperty guarantees to the engine that it is reading pre-sorted input.
