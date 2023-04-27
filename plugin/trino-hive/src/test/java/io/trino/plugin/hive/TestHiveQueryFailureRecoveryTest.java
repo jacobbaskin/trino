@@ -14,6 +14,7 @@
 package io.trino.plugin.hive;
 
 import com.google.common.collect.ImmutableMap;
+import io.trino.Session;
 import io.trino.operator.RetryPolicy;
 import io.trino.plugin.exchange.filesystem.FileSystemExchangePlugin;
 import io.trino.plugin.exchange.filesystem.containers.MinioStorage;
@@ -82,5 +83,15 @@ public class TestHiveQueryFailureRecoveryTest
             minioStorage.close();
             minioStorage = null;
         }
+    }
+
+    @Override
+    protected Session enableDynamicFiltering(boolean enabled)
+    {
+        Session session = super.enableDynamicFiltering(enabled);
+        // Turn off partition execution so that dynamic filters are lazy rather than eager
+        return Session.builder(session)
+                .setCatalogSessionProperty(session.getCatalog().orElseThrow(), "partition_execution_enabled", "false")
+                .build();
     }
 }

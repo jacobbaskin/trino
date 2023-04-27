@@ -182,7 +182,7 @@ public abstract class ExtendedFailureRecoveryTest
                 .finishesSuccessfully();
     }
 
-    private Session enableDynamicFiltering(boolean enabled)
+    protected Session enableDynamicFiltering(boolean enabled)
     {
         Session defaultSession = getQueryRunner().getDefaultSession();
         return Session.builder(defaultSession)

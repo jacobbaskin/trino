@@ -40,6 +40,7 @@ import io.trino.plugin.hive.metastore.Table;
 import io.trino.plugin.hive.type.StructTypeInfo;
 import io.trino.spi.ErrorCodeSupplier;
 import io.trino.spi.TrinoException;
+import io.trino.spi.block.Block;
 import io.trino.spi.connector.ColumnMetadata;
 import io.trino.spi.predicate.NullableValue;
 import io.trino.spi.type.ArrayType;
@@ -558,6 +559,35 @@ public final class HiveUtil
                 type instanceof CharType;
     }
 
+    public static NullableValue partitionKeyFromBlock(Type type, Block block, int position)
+    {
+        if (block.isNull(position)) {
+            return NullableValue.asNull(type);
+        }
+        if (type instanceof DecimalType) {
+            DecimalType decimalType = (DecimalType) type;
+            if (decimalType.isShort()) {
+                return NullableValue.of(type, type.getLong(block, position));
+            }
+            return NullableValue.of(type, type.getObject(block, position));
+        }
+        if (BOOLEAN.equals(type)) {
+            return NullableValue.of(type, type.getBoolean(block, position));
+        }
+        if (REAL.equals(type) || DOUBLE.equals(type)) {
+            return NullableValue.of(type, type.getDouble(block, position));
+        }
+        if (TINYINT.equals(type) ||
+                SMALLINT.equals(type) ||
+                INTEGER.equals(type) ||
+                BIGINT.equals(type) ||
+                DATE.equals(type) ||
+                TIMESTAMP_MILLIS.equals(type)) {
+            return NullableValue.of(type, type.getLong(block, position));
+        }
+        return NullableValue.of(type, type.getObject(block, position));
+    }
+
     public static NullableValue parsePartitionValue(String partitionName, String value, Type type)
     {
         verifyPartitionTypeSupported(partitionName, type);
@@ -926,6 +956,11 @@ public final class HiveUtil
             start = end + 1;
         }
         return resultBuilder.build();
+    }
+
+    public static String erasePartitionColumnNames(String partitionName)
+    {
+        return toPartitionValues(partitionName).stream().map(partition -> "=" + escapePathName(partition)).collect(joining("/"));
     }
 
     public static NullableValue getPrefilledColumnValue(
