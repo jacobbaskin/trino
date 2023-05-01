@@ -117,7 +117,7 @@ public class TestHiveConfig
                 .setHudiCatalogName(null)
                 .setAutoPurge(false)
                 .setPartitionProjectionEnabled(false)
-                .setPartitionExecutionEnabled(true));
+                .setPartitionExecutionEnabled(false));
     }
 
     @Test
@@ -288,7 +288,7 @@ public class TestHiveConfig
                 .setHudiCatalogName("hudi")
                 .setAutoPurge(true)
                 .setPartitionProjectionEnabled(true)
-                .setPartitionExecutionEnabled(false);
+                .setPartitionExecutionEnabled(true);
 
         assertFullMapping(properties, expected);
     }
