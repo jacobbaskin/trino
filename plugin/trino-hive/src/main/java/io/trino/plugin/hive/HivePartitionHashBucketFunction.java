@@ -37,7 +37,7 @@ public class HivePartitionHashBucketFunction
         implements BucketFunction
 {
     private final BucketingVersion bucketingVersion;
-    private final int hiveBucketCount;
+    protected final int hiveBucketCount;
     private final List<TypeInfo> bucketTypeInfos;
     private final int bucketCount;
     private final int firstPartitionColumnIndex;

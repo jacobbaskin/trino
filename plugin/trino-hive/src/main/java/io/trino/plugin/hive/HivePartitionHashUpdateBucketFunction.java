@@ -42,6 +42,7 @@ public class HivePartitionHashUpdateBucketFunction
     protected int getHiveBucket(Page page, int position)
     {
         Block bucketBlock = page.getBlock(0).getObject(position, Block.class);
-        return (int) INTEGER.getLong(bucketBlock, BUCKET_CHANNEL) & Integer.MAX_VALUE;
+        long value = INTEGER.getInt(bucketBlock, BUCKET_CHANNEL);
+        return (int) (value & Integer.MAX_VALUE) % hiveBucketCount;
     }
 }
