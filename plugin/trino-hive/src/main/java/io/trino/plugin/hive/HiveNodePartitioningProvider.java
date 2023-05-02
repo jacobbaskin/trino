@@ -61,19 +61,7 @@ public class HiveNodePartitioningProvider
             int bucketCount)
     {
         if (partitioningHandle instanceof HiveUpdateHandle handle) {
-            if (handle.isUsePartitionedBucketingForWrites()) {
-                List<HiveType> hiveBucketTypes = handle.getHiveTypes();
-                return new HivePartitionHashUpdateBucketFunction(
-                        handle.getBucketingVersion(),
-                        handle.getBucketCount(),
-                        hiveBucketTypes,
-                        partitionChannelTypes.subList(0, partitionChannelTypes.size() - hiveBucketTypes.size()),
-                        typeOperators,
-                        bucketCount);
-            }
-            else {
-                return new HiveUpdateBucketFunction(bucketCount);
-            }
+            return new HiveUpdateBucketFunction(bucketCount);
         }
         HivePartitioningHandle handle = (HivePartitioningHandle) partitioningHandle;
         List<HiveType> hiveBucketTypes = handle.getHiveTypes();

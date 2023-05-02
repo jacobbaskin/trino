@@ -37,7 +37,7 @@ public class HivePartitionHashBucketFunction
         implements BucketFunction
 {
     private final BucketingVersion bucketingVersion;
-    protected final int hiveBucketCount;
+    private final int hiveBucketCount;
     private final List<TypeInfo> bucketTypeInfos;
     private final int bucketCount;
     private final int firstPartitionColumnIndex;
@@ -63,8 +63,7 @@ public class HivePartitionHashBucketFunction
         this.bucketCount = bucketCount;
     }
 
-    // Overridden for updates
-    protected int getHiveBucket(Page page, int position)
+    private int getHiveBucket(Page page, int position)
     {
         return HiveBucketing.getHiveBucket(bucketingVersion, hiveBucketCount, bucketTypeInfos, page, position);
     }
