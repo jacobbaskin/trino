@@ -309,11 +309,9 @@ public class TestHivePlans
     // Disable join ordering so that expected plans are well defined.
     private Session noJoinReordering()
     {
-        Session session = getQueryRunner().getDefaultSession();
-        return Session.builder(session)
+        return Session.builder(getQueryRunner().getDefaultSession())
                 .setSystemProperty(JOIN_REORDERING_STRATEGY, JoinReorderingStrategy.NONE.name())
                 .setSystemProperty(JOIN_DISTRIBUTION_TYPE, JoinDistributionType.PARTITIONED.name())
-                .setCatalogSessionProperty(session.getCatalog().orElseThrow(), "partition_execution_enabled", "false")
                 .build();
     }
 }
