@@ -61,7 +61,7 @@ public class HiveNodePartitioningProvider
             int bucketCount)
     {
         if (partitioningHandle instanceof HiveUpdateHandle handle) {
-            if (handle.isUsePartitionedBucketingForWrites()) {
+            if (false && handle.isUsePartitionedBucketingForWrites()) {
                 List<HiveType> hiveBucketTypes = handle.getHiveTypes();
                 return new HivePartitionHashUpdateBucketFunction(
                         handle.getBucketingVersion(),
